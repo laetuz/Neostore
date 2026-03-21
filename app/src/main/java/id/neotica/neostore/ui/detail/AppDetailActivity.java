@@ -1,7 +1,12 @@
 package id.neotica.neostore.ui.detail;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +22,7 @@ import id.neotica.neostore.R;
 import id.neotica.neostore.model.VersionModel;
 import id.neotica.neostore.network.ApiCallback;
 import id.neotica.neostore.network.ApiTask;
+import id.neotica.neostore.network.DownloadTask;
 import id.neotica.neostore.ui.VersionAdapter;
 
 public class AppDetailActivity extends Activity {
@@ -24,6 +30,7 @@ public class AppDetailActivity extends Activity {
     private TextView tvTitle, tvDesc;
     private ListView lvVersions;
     private VersionAdapter adapter;
+    private Button btDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +40,75 @@ public class AppDetailActivity extends Activity {
         tvTitle = (TextView) findViewById(R.id.tv_detail_title);
         tvDesc = (TextView) findViewById(R.id.tv_detail_desc);
         lvVersions = (ListView) findViewById(R.id.lv_versions);
+        btDownload = (Button) findViewById(R.id.bt_download);
+
+        btDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (adapter.getCount() == 0) {
+                    Toast.makeText(AppDetailActivity.this, "No versions available.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                VersionModel latestVersion = null;
+                int maxVersionCode = -1;
+
+                // find the highest version_code
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    VersionModel current = adapter.getItem(i);
+                    if (current != null && current.versionCode > maxVersionCode) {
+                        maxVersionCode = current.versionCode;
+                        latestVersion = current;
+                    }
+                }
+
+                // Download when found the highest version_code
+                if (latestVersion != null && latestVersion.fileUrl != null && latestVersion.fileUrl.length() > 0) {
+
+                    String downloadUrl = BuildConfig.FILE_BASE_URL + latestVersion.fileUrl;
+                    String fileName = latestVersion.fileUrl.substring(latestVersion.fileUrl.lastIndexOf('/') + 1);
+
+                    if (fileName.length() == 0 || !fileName.endsWith(".apk")) {
+                        fileName = "update_v" + latestVersion.versionCode + ".apk";
+                    }
+
+                    Toast.makeText(AppDetailActivity.this, "Downloading v" + latestVersion.versionName + "...", Toast.LENGTH_SHORT).show();
+
+                    // start downloading.
+                    new DownloadTask(AppDetailActivity.this, fileName).execute(downloadUrl);
+
+                } else {
+                    Toast.makeText(AppDetailActivity.this, "Download link not available for the latest version.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         adapter = new VersionAdapter(this, new ArrayList<VersionModel>());
         lvVersions.setAdapter(adapter);
+
+        lvVersions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                VersionModel clickedVersion = adapter.getItem(position);
+
+                if (clickedVersion != null && clickedVersion.fileUrl != null && clickedVersion.fileUrl.length() > 0) {
+
+                    String downloadUrl = BuildConfig.FILE_BASE_URL + clickedVersion.fileUrl;
+
+                    String fileName = clickedVersion.fileUrl.substring(clickedVersion.fileUrl.lastIndexOf('/') + 1);
+
+                    if (fileName.length() == 0 || !fileName.endsWith(".apk")) {
+                        fileName = "update_v" + clickedVersion.versionCode + ".apk";
+                    }
+
+                    // start downloading.
+                    new DownloadTask(AppDetailActivity.this, fileName).execute(downloadUrl);
+
+                } else {
+                    Toast.makeText(AppDetailActivity.this, "Download link not available for this version.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         String packageName = getIntent().getStringExtra("PACKAGE_NAME");
 

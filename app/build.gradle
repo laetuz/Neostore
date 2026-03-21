@@ -17,7 +17,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "BASE_URL", properties.getProperty("BASE_URL", "\"http://fallback.url\"")
-        buildConfigField "String", "IMG_BASE_URL", properties.getProperty("IMG_BASE_URL", "\"http://fallback.img\"")
+        buildConfigField "String", "FILE_BASE_URL", properties.getProperty("FILE_BASE_URL", "\"http://fallback.img\"")
     }
     buildTypes {
         release {
