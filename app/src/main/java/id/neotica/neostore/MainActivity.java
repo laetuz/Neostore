@@ -1,7 +1,10 @@
 package id.neotica.neostore;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +20,8 @@ import id.neotica.neostore.model.AppModel;
 import id.neotica.neostore.network.ApiCallback;
 import id.neotica.neostore.network.ApiTask;
 import id.neotica.neostore.ui.AppAdapter;
+import id.neotica.neostore.ui.detail.AppDetailActivity;
+import id.neotica.neostore.utils.CrashCatcher;
 
 public class MainActivity extends Activity {
 
@@ -27,7 +32,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CrashCatcher.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);
+        CrashCatcher.showCrashLogIfAny(this);
 
         TextView tvTitle = (TextView) findViewById(R.id.tv_title);
 
@@ -37,6 +44,18 @@ public class MainActivity extends Activity {
         appList = new ArrayList<>();
         adapter = new AppAdapter(this, appList);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                AppModel clickedApp = adapter.getItem(position);
+                if (clickedApp != null) {
+                    Intent intent = new Intent(MainActivity.this, AppDetailActivity.class);
+                    intent.putExtra("PACKAGE_NAME", clickedApp.packageName);
+                    startActivity(intent);
+                }
+            }
+        });
 
         fetchApps();
     }

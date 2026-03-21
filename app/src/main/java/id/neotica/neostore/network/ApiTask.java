@@ -75,6 +75,16 @@ public class ApiTask extends AsyncTask<Void, Void, String> {
                 }
                 reader.close();
             } else {
+                InputStream errorStream = conn.getErrorStream();
+                if (errorStream != null) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    reader.close();
+                    return "HTTP_ERROR_" + responseCode + "|" + response.toString();
+                }
                 return "HTTP_ERROR_" + responseCode;
             }
 
@@ -90,7 +100,6 @@ public class ApiTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        // Safely dismiss dialog
         try {
             if (dialog != null && dialog.isShowing()) {
                 dialog.dismiss();
@@ -101,7 +110,7 @@ public class ApiTask extends AsyncTask<Void, Void, String> {
 
         // Send result back to the Activity
         if (result != null && result.startsWith("HTTP_ERROR_")) {
-            callback.onError("Server returned an error: " + result);
+            callback.onError(result);
         } else if (result != null && result.startsWith("NETWORK_ERROR_")) {
             callback.onError("Failed to connect. Check internet.");
         } else if (result != null) {
