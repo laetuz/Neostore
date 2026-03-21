@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,12 @@ public class MainActivity extends Activity {
     private AppAdapter adapter;
     private List<AppModel> appList;
 
+    // Pagination State
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private Button btnLoadMore;
+    private View footerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,11 @@ public class MainActivity extends Activity {
 
         listView = (ListView) findViewById(R.id.lv_main);
         appList = new ArrayList<>();
+
+        footerView = getLayoutInflater().inflate(R.layout.footer_load_more, null);
+        btnLoadMore = (Button) footerView.findViewById(R.id.btn_load_more);
+        listView.addFooterView(footerView);
+
         adapter = new AppAdapter(this, appList);
         listView.setAdapter(adapter);
 
@@ -57,28 +69,52 @@ public class MainActivity extends Activity {
             }
         });
 
-        fetchApps();
+        btnLoadMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    fetchApps(currentPage);
+                }
+            }
+        });
+
+        fetchApps(currentPage);
     }
 
-    private void fetchApps() {
-        String targetUrl = BuildConfig.BASE_URL + "/apps/feed";
+    private void fetchApps(final int pageToLoad) {
+        String targetUrl = BuildConfig.BASE_URL + "/apps/feed?page="+pageToLoad;
 
         new ApiTask(this, "GET", targetUrl, null, "Loading Neostore...", new ApiCallback() {
             @Override
             public void onSuccess(String response) {
                 try {
-                    adapter.clear();
 
-                    JSONArray jsonArray = new JSONArray(response);
+                    JSONObject root = new JSONObject(response);
 
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject appObj = jsonArray.getJSONObject(i);
+                    currentPage = root.optInt("page", 1);
+                    totalPages = root.optInt("total_pages", 1);
 
-                        String packageName = appObj.optString("package_name", "");
-                        String title = appObj.optString("title", "");
-                        String desc = appObj.optString("description", "");
+                    JSONArray dataArray = root.optJSONArray("data");
 
-                        adapter.add(new AppModel(packageName, title, desc));
+                    if (pageToLoad == 1) adapter.clear();
+
+                    if (dataArray != null) {
+                        for (int i = 0; i < dataArray.length(); i++) {
+                            JSONObject appObj = dataArray.getJSONObject(i);
+
+                            String packageName = appObj.optString("package_name", "");
+                            String title = appObj.optString("title", "");
+                            String desc = appObj.optString("description", "");
+
+                            adapter.add(new AppModel(packageName, title, desc));
+                        }
+                    }
+
+                    if (currentPage >= totalPages) {
+                        btnLoadMore.setVisibility(View.GONE);
+                    } else {
+                        btnLoadMore.setVisibility(View.VISIBLE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -90,6 +126,9 @@ public class MainActivity extends Activity {
             @Override
             public void onError(String errorMessage) {
                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                if (pageToLoad > 1) {
+                    currentPage--;
+                }
             }
         }).execute();
     }
