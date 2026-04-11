@@ -1,11 +1,17 @@
 package id.neotica.neostore;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +39,9 @@ public class MainActivity extends Activity {
     private List<AppModel> appList;
 
     // Pagination State
+    private EditText etSearch;
+    private Button btnSearch;
+    private String currentSearchQuery = "";
     private int currentPage = 1;
     private int totalPages = 1;
     private Button btnLoadMore;
@@ -47,6 +58,9 @@ public class MainActivity extends Activity {
 
         tvTitle.setText("Welcome User!");
 
+        etSearch = (EditText) findViewById(R.id.et_search);
+        btnSearch = (Button) findViewById(R.id.btn_search);
+
         listView = (ListView) findViewById(R.id.lv_main);
         appList = new ArrayList<>();
 
@@ -56,6 +70,26 @@ public class MainActivity extends Activity {
 
         adapter = new AppAdapter(this, appList);
         listView.setAdapter(adapter);
+
+        btnLoadMore.setVisibility(View.GONE);
+
+        btnSearch.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                performSearch();
+            }
+        });
+
+        etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -82,8 +116,25 @@ public class MainActivity extends Activity {
         fetchApps(currentPage);
     }
 
+    private void performSearch() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromInputMethod(etSearch.getWindowToken(), 0);
+
+        currentSearchQuery = etSearch.getText().toString().trim();
+        currentPage = 1;
+        fetchApps(currentPage);
+    }
+
     private void fetchApps(final int pageToLoad) {
         String targetUrl = BuildConfig.BASE_URL + "/apps/feed?page="+pageToLoad;
+
+        if (!TextUtils.isEmpty(currentSearchQuery)) {
+            try {
+                targetUrl += "&search=" + URLEncoder.encode(currentSearchQuery, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace(); // UTF-8 is always supported, but Java requires the catch
+            }
+        }
 
         new ApiTask(this, "GET", targetUrl, null, "Loading Neostore...", new ApiCallback() {
             @Override
@@ -106,8 +157,9 @@ public class MainActivity extends Activity {
                             String packageName = appObj.optString("package_name", "");
                             String title = appObj.optString("title", "");
                             String desc = appObj.optString("description", "");
+                            String iconUrl = appObj.isNull("icon_url") ? "" : appObj.optString("icon_url", "");
 
-                            adapter.add(new AppModel(packageName, title, desc));
+                            adapter.add(new AppModel(packageName, title, desc, iconUrl));
                         }
                     }
 

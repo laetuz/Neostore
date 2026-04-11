@@ -9,7 +9,7 @@ android {
     compileSdkVersion 21
     buildToolsVersion '25.0.0'
     defaultConfig {
-        applicationId "id.neotica.neolegacytemplate"
+        applicationId "id.neotica.neostore"
         minSdkVersion 7
         targetSdkVersion 21
         versionCode 1

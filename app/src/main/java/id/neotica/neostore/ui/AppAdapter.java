@@ -1,16 +1,19 @@
 package id.neotica.neostore.ui;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
+import id.neotica.neostore.BuildConfig;
 import id.neotica.neostore.R;
 import id.neotica.neostore.model.AppModel;
 
@@ -25,6 +28,7 @@ public class AppAdapter extends ArrayAdapter<AppModel> {
 
     private static class ViewHolder {
         TextView tvtitle;
+        ImageView ivIcon;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class AppAdapter extends ArrayAdapter<AppModel> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_app, parent, false);
 
             viewHolder.tvtitle = (TextView) convertView.findViewById(R.id.tv_title);
+            viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -45,6 +50,20 @@ public class AppAdapter extends ArrayAdapter<AppModel> {
 
         if (app != null) {
             viewHolder.tvtitle.setText(app.title);
+
+            if (!TextUtils.isEmpty(app.iconUrl)) {
+
+                String fullImageUrl = BuildConfig.FILE_BASE_URL + "/buckets" + app.iconUrl;
+
+                // Fire the ImageLoader
+                ImageLoader.getInstance().displayImage(fullImageUrl, viewHolder.ivIcon);
+
+            } else {
+                // If the app has no icon, cancel any pending image load on this recycled view
+                // and set it to a default system icon
+                ImageLoader.getInstance().cancelDisplayTask(viewHolder.ivIcon);
+                viewHolder.ivIcon.setImageResource(android.R.drawable.sym_def_app_icon);
+            }
         }
 
         return convertView;

@@ -7,15 +7,18 @@ package id.neotica.neostore.model;
 public class AppModel {
     public String packageName;
     public String title;
-    public String desccription;
+    public String description;
+    public String iconUrl;
 
     public AppModel(
             String packageName,
             String title,
-            String description
+            String description,
+            String iconUrl
     ) {
         this.packageName = packageName;
         this.title = title;
-        this.desccription = description;
+        this.description = description;
+        this.iconUrl = iconUrl;
     }
 }
