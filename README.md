@@ -1,4 +1,10 @@
-# Legacy Android Project Template
+# Neostore
+
+<img width="320" height="480" alt="2014_06_25_23 35 39" src="https://github.com/user-attachments/assets/3e847ebe-ead8-45dc-8afb-8b10f7f9a4f6" />
+
+<img width="320" height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/e3e6dbbe-db4f-4acb-877d-89cd7776e715" />
+
+
 
 Prerequisite (What I use):
 - Android Studio 2.3.2
