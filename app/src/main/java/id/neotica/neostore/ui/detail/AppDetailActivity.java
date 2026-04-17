@@ -30,6 +30,8 @@ public class AppDetailActivity extends Activity {
     private VersionAdapter adapter;
     private Button btDownload;
 
+    private static final String INTENT_PACKAGE_NAME = "PACKAGE_NAME";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +110,7 @@ public class AppDetailActivity extends Activity {
             }
         });
 
-        String packageName = getIntent().getStringExtra("PACKAGE_NAME");
+        String packageName = getIntent().getStringExtra(INTENT_PACKAGE_NAME);
 
         if (packageName != null) {
             fetchAppDetails(packageName);

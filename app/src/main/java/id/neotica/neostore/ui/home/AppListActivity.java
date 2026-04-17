@@ -1,4 +1,4 @@
-package id.neotica.neostore;
+package id.neotica.neostore.ui.home;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +25,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.neotica.neostore.BuildConfig;
+import id.neotica.neostore.R;
 import id.neotica.neostore.model.AppModel;
 import id.neotica.neostore.network.ApiCallback;
 import id.neotica.neostore.network.ApiTask;
@@ -32,7 +34,7 @@ import id.neotica.neostore.ui.AppAdapter;
 import id.neotica.neostore.ui.detail.AppDetailActivity;
 import id.neotica.neostore.utils.CrashCatcher;
 
-public class MainActivity extends Activity {
+public class AppListActivity extends Activity {
 
     private ListView listView;
     private AppAdapter adapter;
@@ -42,17 +44,26 @@ public class MainActivity extends Activity {
     private EditText etSearch;
     private Button btnSearch;
     private String currentSearchQuery = "";
+    private String currentCategory = "";
     private int currentPage = 1;
     private int totalPages = 1;
     private Button btnLoadMore;
     private View footerView;
 
+    private static final String INTENT_URL_TOPIC = "URL_TOPIC";
+    private static final String INTENT_PACKAGE_NAME = "PACKAGE_NAME";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashCatcher.init(this.getApplicationContext());
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_app_list);
         CrashCatcher.showCrashLogIfAny(this);
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(INTENT_URL_TOPIC)) {
+            currentCategory = intent.getStringExtra(INTENT_URL_TOPIC);
+        }
 
         TextView tvTitle = (TextView) findViewById(R.id.tv_title);
 
@@ -96,8 +107,8 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 AppModel clickedApp = adapter.getItem(position);
                 if (clickedApp != null) {
-                    Intent intent = new Intent(MainActivity.this, AppDetailActivity.class);
-                    intent.putExtra("PACKAGE_NAME", clickedApp.packageName);
+                    Intent intent = new Intent(AppListActivity.this, AppDetailActivity.class);
+                    intent.putExtra(INTENT_PACKAGE_NAME, clickedApp.packageName);
                     startActivity(intent);
                 }
             }
@@ -128,13 +139,18 @@ public class MainActivity extends Activity {
     private void fetchApps(final int pageToLoad) {
         String targetUrl = BuildConfig.BASE_URL + "/apps/feed?page="+pageToLoad;
 
-        if (!TextUtils.isEmpty(currentSearchQuery)) {
-            try {
-                targetUrl += "&search=" + URLEncoder.encode(currentSearchQuery, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace(); // UTF-8 is always supported, but Java requires the catch
+        try {
+            if (!TextUtils.isEmpty(currentCategory)) {
+                targetUrl += "&category=" + URLEncoder.encode(currentCategory, "UTF-8");
             }
+
+            if (!TextUtils.isEmpty(currentSearchQuery)) {
+                targetUrl += "&search=" + URLEncoder.encode(currentSearchQuery, "UTF-8");
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
+
 
         new ApiTask(this, "GET", targetUrl, null, "Loading Neostore...", new ApiCallback() {
             @Override
@@ -170,14 +186,14 @@ public class MainActivity extends Activity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Error parsing server data: " + e.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AppListActivity.this, "Error parsing server data: " + e.toString(), Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
             public void onError(String errorMessage) {
-                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(AppListActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 if (pageToLoad > 1) {
                     currentPage--;
                 }
