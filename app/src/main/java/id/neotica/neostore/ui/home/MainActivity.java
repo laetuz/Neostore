@@ -3,21 +3,37 @@ package id.neotica.neostore.ui.home;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
 
+import id.neotica.neostore.BuildConfig;
 import id.neotica.neostore.R;
+import id.neotica.neostore.network.ApiCallback;
+import id.neotica.neostore.network.ApiTask;
+import id.neotica.neostore.ui.detail.AppDetailActivity;
 import id.neotica.neostore.utils.CrashCatcher;
 
 public class MainActivity extends Activity {
 
     private ListView listView;
     private SectionAdapter adapter;
+
+    private View headerView;
+    private LinearLayout llFeaturedContainer;
 
     private static final String INTENT_TOPIC = "URL_TOPIC";
 
@@ -32,6 +48,13 @@ public class MainActivity extends Activity {
         tvTitle.setText("Welcome User!");
 
         listView = (ListView) findViewById(R.id.lv_main);
+
+        // 1. Inflate and add the Header BEFORE setting the adapter
+        LayoutInflater inflater = getLayoutInflater();
+        headerView = inflater.inflate(R.layout.header_featured_apps, listView, false);
+        llFeaturedContainer = (LinearLayout) headerView.findViewById(R.id.ll_featured_container);
+        listView.addHeaderView(headerView);
+
         List<String> topicList = Arrays.asList("APPLICATION", "GAME");
 
         adapter = new SectionAdapter(this, topicList);
@@ -41,8 +64,12 @@ public class MainActivity extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String clickedApp = adapter.getItem(position);
-                if (clickedApp != null) {
+                Object item = parent.getItemAtPosition(position);
+
+                // 2. Make sure they didn't click the header itself
+                if (item instanceof String) {
+                    String clickedApp = (String) item;
+
                     Intent intent = new Intent(MainActivity.this, AppListActivity.class);
                     intent.putExtra(INTENT_TOPIC, clickedApp);
                     startActivity(intent);
@@ -50,6 +77,73 @@ public class MainActivity extends Activity {
             }
         });
 
+        fetchFeaturedApps();
+    }
+
+    private void fetchFeaturedApps() {
+        String url = BuildConfig.BASE_URL + "/apps/collections/featured";
+
+        // We pass null for the loading message so it fetches quietly in the background
+        new ApiTask(this, "GET", url, null, null, new ApiCallback() {
+            @Override
+            public void onSuccess(String response) {
+                try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    JSONArray dataArray = jsonResponse.getJSONArray("data");
+
+                    if (dataArray.length() > 0) {
+                        // Make the header visible since we have data
+                        headerView.setVisibility(View.VISIBLE);
+                        llFeaturedContainer.removeAllViews(); // Clear any old items
+
+                        for (int i = 0; i < dataArray.length(); i++) {
+                            JSONObject appObj = dataArray.getJSONObject(i);
+                            final String packageName = appObj.getString("package_name");
+                            String title = appObj.getString("title");
+                            String iconUrl = appObj.optString("icon_url", "");
+
+                            // Inflate the individual item view
+                            View itemView = getLayoutInflater().inflate(R.layout.item_featured_app, llFeaturedContainer, false);
+
+                            TextView tvFeaturedTitle = (TextView) itemView.findViewById(R.id.tv_featured_title);
+                            ImageView ivFeaturedIcon = (ImageView) itemView.findViewById(R.id.iv_featured_icon);
+
+                            tvFeaturedTitle.setText(title);
+
+                            if (!TextUtils.isEmpty(iconUrl)) {
+                                String fullImageUrl = BuildConfig.FILE_BASE_URL + "/buckets" + iconUrl;
+                                ImageLoader.getInstance().displayImage(fullImageUrl, ivFeaturedIcon);
+                            } else {
+                                // Fallback to system default if no icon exists
+                                ImageLoader.getInstance().cancelDisplayTask(ivFeaturedIcon);
+                                ivFeaturedIcon.setImageResource(android.R.drawable.sym_def_app_icon);
+                            }
+                            // Set click listener to go straight to the Detail screen
+                            itemView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(MainActivity.this, AppDetailActivity.class);
+                                    intent.putExtra("PACKAGE_NAME", packageName);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            // Add the view to the horizontal scroll container
+                            llFeaturedContainer.addView(itemView);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Keep header hidden if parsing fails
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Keep header hidden on network error
+                // We don't need a toast here so it fails silently if the network is down
+            }
+        }).execute();
     }
 
 }
