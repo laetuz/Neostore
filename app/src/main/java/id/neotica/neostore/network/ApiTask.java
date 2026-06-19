@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * Created by ryomartin on 14/03/26.
@@ -24,14 +25,20 @@ public class ApiTask extends AsyncTask<Void, Void, String> {
     private ApiCallback callback;
     private ProgressDialog dialog;
     private String loadingMessage;
+    private Map<String, String> headers;
 
     public ApiTask(Context context, String method, String urlString, String jsonPayload, String loadingMessage, ApiCallback callback) {
+        this(context, method, urlString, jsonPayload, loadingMessage, callback, null);
+    }
+
+    public ApiTask(Context context, String method, String urlString, String jsonPayload, String loadingMessage, ApiCallback callback, Map<String, String> headers) {
         this.context = context;
         this.method = method;
         this.urlString = urlString;
         this.jsonPayload = jsonPayload;
         this.loadingMessage = loadingMessage;
         this.callback = callback;
+        this.headers = headers;
     }
 
     @Override
@@ -53,6 +60,12 @@ public class ApiTask extends AsyncTask<Void, Void, String> {
             conn.setRequestMethod(method);
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
+
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    conn.setRequestProperty(entry.getKey(), entry.getValue());
+                }
+            }
 
             // If we are sending data (POST or PUT), we need to write to the OutputStream
             if (("POST".equals(method) || "PUT".equals(method)) && jsonPayload != null) {
