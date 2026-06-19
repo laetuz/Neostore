@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,6 +26,7 @@ import id.neotica.neostore.R;
 import id.neotica.neostore.network.ApiCallback;
 import id.neotica.neostore.network.ApiTask;
 import id.neotica.neostore.ui.detail.AppDetailActivity;
+import id.neotica.neostore.utils.AuthManager;
 import id.neotica.neostore.utils.CrashCatcher;
 
 public class MainActivity extends Activity {
@@ -41,11 +43,33 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashCatcher.init(this.getApplicationContext());
+
         setContentView(R.layout.activity_main);
         CrashCatcher.showCrashLogIfAny(this);
 
-        TextView tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvTitle.setText("Welcome User!");
+        final TextView tvTitle = (TextView) findViewById(R.id.tv_title);
+        final Button btLogin = (Button) findViewById(R.id.btn_login);
+        final AuthManager authManager = new AuthManager(this);
+
+        if (authManager.isLoggedIn()) {
+            btLogin.setVisibility(View.GONE);
+            tvTitle.setVisibility(View.VISIBLE);
+            String username = authManager.getUsernameFromToken();
+            if (username != null) {
+                tvTitle.setText("Welcome " + username + "!");
+            } else {
+                tvTitle.setText("Welcome User!");
+            }
+        } else {
+            btLogin.setVisibility(View.VISIBLE);
+            tvTitle.setVisibility(View.GONE);
+            btLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                }
+            });
+        }
 
         listView = (ListView) findViewById(R.id.lv_main);
 
