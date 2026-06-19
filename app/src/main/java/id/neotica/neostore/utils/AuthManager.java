@@ -15,6 +15,7 @@ public class AuthManager {
     private static final String KEY_TOKEN = "jwt_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_EXPIRATION_TIME = "expiration_time";
+    private static final String KEY_ADULT_CONTENT = "adult_content_enabled";
 
     private SharedPreferences prefs;
 
@@ -64,6 +65,14 @@ public class AuthManager {
                 .remove(KEY_REFRESH_TOKEN)
                 .remove(KEY_EXPIRATION_TIME)
                 .commit();
+    }
+
+    public void saveAdultContentEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_ADULT_CONTENT, enabled).commit();
+    }
+
+    public boolean isAdultContentEnabled() {
+        return prefs.getBoolean(KEY_ADULT_CONTENT, false);
     }
 
     public Map<String, String> getAuthHeaders() {

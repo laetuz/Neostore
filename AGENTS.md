@@ -30,7 +30,8 @@ Legacy Android app store client targeting **Android 2.1+ (API 7)** — Eclair / 
 2. **`ListView.addFooterView()`** MUST be called **before** `listView.setAdapter()`.
 3. **ViewHolder pattern** — All `ListAdapter.getView()` implementations must recycle via `convertView.setTag(viewHolder)` to prevent OOM on 512 MB devices. Already used in `AppAdapter`, `VersionAdapter`, `SectionAdapter`.
 4. **No `SharedPreferences.Editor.apply()`** — Not available until API 9. Always use `.commit()` instead (available from API 1).
-5. **No silent installs** — APK download must go through `DownloadTask` → `Environment.getExternalStorageDirectory()` → `Intent.ACTION_VIEW` with `application/vnd.android.package-archive` MIME type. Installs always require user confirmation.
+5. **No `?android:attr/selectableItemBackground`** — Not available until API 11. Use a plain color/drawable or remove for API < 11.
+6. **No silent installs** — APK download must go through `DownloadTask` → `Environment.getExternalStorageDirectory()` → `Intent.ACTION_VIEW` with `application/vnd.android.package-archive` MIME type. Installs always require user confirmation.
 
 ## Architecture
 
@@ -46,11 +47,12 @@ app/src/main/java/id/neotica/neostore/
 │   ├── home/
 │   │   ├── MainActivity.java     # Launcher: sections + featured apps; auth gate
 │   │   ├── LoginActivity.java    # Login screen (GET /auth/login with header creds)
+│   │   ├── SettingsActivity.java # Profile screen with logout
 │   │   ├── AppListActivity.java  # Paginated app list with search
 │   │   ├── AppTopic.java         # Topic model (APPLICATION/GAME)
 │   │   └── SectionAdapter.java   # Section list adapter
 │   ├── detail/
-│   │   └── AppDetailActivity.java# App detail + version list + download
+│   │   └── AppDetailActivity.java# App detail + version list + download + icon
 │   ├── AppAdapter.java           # App list adapter (ViewHolder pattern)
 │   └── VersionAdapter.java       # Version list adapter (ViewHolder pattern)
 └── utils/

@@ -2,12 +2,16 @@ package id.neotica.neostore.ui.detail;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +30,7 @@ import id.neotica.neostore.ui.VersionAdapter;
 public class AppDetailActivity extends Activity {
 
     private TextView tvTitle, tvDesc;
+    private ImageView ivIcon;
     private ListView lvVersions;
     private VersionAdapter adapter;
     private Button btDownload;
@@ -39,6 +44,7 @@ public class AppDetailActivity extends Activity {
 
         tvTitle = (TextView) findViewById(R.id.tv_detail_title);
         tvDesc = (TextView) findViewById(R.id.tv_detail_desc);
+        ivIcon = (ImageView) findViewById(R.id.iv_detail_icon);
         lvVersions = (ListView) findViewById(R.id.lv_versions);
         btDownload = (Button) findViewById(R.id.bt_download);
 
@@ -131,6 +137,14 @@ public class AppDetailActivity extends Activity {
 
                     tvTitle.setText(root.optString("title", "Unknown App"));
                     tvDesc.setText(root.optString("description", "No description available."));
+
+                    String iconUrl = root.optString("icon_url", "");
+                    if (!TextUtils.isEmpty(iconUrl)) {
+                        String fullImageUrl = BuildConfig.FILE_BASE_URL + "/buckets" + iconUrl;
+                        ImageLoader.getInstance().displayImage(fullImageUrl, ivIcon);
+                    } else {
+                        ivIcon.setImageResource(android.R.drawable.sym_def_app_icon);
+                    }
 
                     JSONArray versionsArray = root.optJSONArray("versions");
                     if (versionsArray != null) {

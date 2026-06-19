@@ -65,10 +65,6 @@ public class AppListActivity extends Activity {
             currentCategory = intent.getStringExtra(INTENT_URL_TOPIC);
         }
 
-        TextView tvTitle = (TextView) findViewById(R.id.tv_title);
-
-        tvTitle.setText("Welcome User!");
-
         etSearch = (EditText) findViewById(R.id.et_search);
         btnSearch = (Button) findViewById(R.id.btn_search);
 
