@@ -5,8 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="8dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/iv_featured_icon"

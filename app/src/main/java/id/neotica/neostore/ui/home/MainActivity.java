@@ -18,7 +18,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import id.neotica.neostore.BuildConfig;
@@ -60,6 +60,12 @@ public class MainActivity extends Activity {
             } else {
                 tvTitle.setText("Welcome User!");
             }
+            tvTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
+            });
         } else {
             btLogin.setVisibility(View.VISIBLE);
             tvTitle.setVisibility(View.GONE);
@@ -79,7 +85,12 @@ public class MainActivity extends Activity {
         llFeaturedContainer = (LinearLayout) headerView.findViewById(R.id.ll_featured_container);
         listView.addHeaderView(headerView);
 
-        List<String> topicList = Arrays.asList("APPLICATION", "GAME");
+        List<String> topicList = new ArrayList<String>();
+        topicList.add("APPLICATION");
+        topicList.add("GAME");
+        if (authManager.isAdultContentEnabled()) {
+            topicList.add("ADULT");
+        }
 
         adapter = new SectionAdapter(this, topicList);
         listView.setAdapter(adapter);
