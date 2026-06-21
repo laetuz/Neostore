@@ -1,12 +1,16 @@
 package id.neotica.neostore.ui.home;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +21,7 @@ import id.neotica.neostore.utils.CrashCatcher;
 public class SettingsActivity extends Activity {
 
     private AuthManager authManager;
+    private boolean ignoreCheckedChange;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +42,56 @@ public class SettingsActivity extends Activity {
             tvUsername.setText("User");
         }
 
-        CheckBox cbAdultContent = (CheckBox) findViewById(R.id.cb_adult_content);
+        final CheckBox cbAdultContent = (CheckBox) findViewById(R.id.cb_adult_content);
         cbAdultContent.setChecked(authManager.isAdultContentEnabled());
         cbAdultContent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                authManager.saveAdultContentEnabled(b);
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (ignoreCheckedChange) return;
+
+                if (isChecked) {
+                    final EditText input = new EditText(SettingsActivity.this);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                    new AlertDialog.Builder(SettingsActivity.this)
+                            .setTitle("18+ Content")
+                            .setMessage("Enter password to enable 18+ content:")
+                            .setView(input)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String password = input.getText().toString();
+                                    if ("adult".equals(password)) {
+                                        authManager.saveAdultContentEnabled(true);
+                                    } else {
+                                        Toast.makeText(SettingsActivity.this, "Wrong password", Toast.LENGTH_SHORT).show();
+                                        ignoreCheckedChange = true;
+                                        cbAdultContent.setChecked(false);
+                                        ignoreCheckedChange = false;
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ignoreCheckedChange = true;
+                                    cbAdultContent.setChecked(false);
+                                    ignoreCheckedChange = false;
+                                    dialog.cancel();
+                                }
+                            })
+                            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    ignoreCheckedChange = true;
+                                    cbAdultContent.setChecked(false);
+                                    ignoreCheckedChange = false;
+                                }
+                            })
+                            .show();
+                } else {
+                    authManager.saveAdultContentEnabled(false);
+                }
             }
         });
 

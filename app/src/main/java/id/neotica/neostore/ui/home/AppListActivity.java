@@ -133,10 +133,16 @@ public class AppListActivity extends Activity {
     }
 
     private void fetchApps(final int pageToLoad) {
-        String targetUrl = BuildConfig.BASE_URL + "/apps/feed?page="+pageToLoad;
+        String baseEndpoint;
+        if ("ADULT".equals(currentCategory)) {
+            baseEndpoint = "/apps/adult-feed";
+        } else {
+            baseEndpoint = "/apps/feed";
+        }
+        String targetUrl = BuildConfig.BASE_URL + baseEndpoint + "?page=" + pageToLoad;
 
         try {
-            if (!TextUtils.isEmpty(currentCategory)) {
+            if (!TextUtils.isEmpty(currentCategory) && !"ADULT".equals(currentCategory)) {
                 targetUrl += "&category=" + URLEncoder.encode(currentCategory, "UTF-8");
             }
 
