@@ -84,3 +84,10 @@ ImageLoader.getInstance().displayImage(url, imageView);
 ```
 - Use `BuildConfig.FILE_BASE_URL + "/buckets" + iconUrl` for app icons.
 - Always cancel pending tasks on recycled views: `ImageLoader.getInstance().cancelDisplayTask(imageView)`.
+
+## 7. App icon export
+
+To generate correctly-sized mipmap icons from a single source PNG, use:
+https://www.batchpngtools.com/android-icon-set-generator
+
+Target densities: `mdpi` (48×48), `hdpi` (72×72), `xhdpi` (96×96), `xxhdpi` (144×144), `xxxhdpi` (192×192).

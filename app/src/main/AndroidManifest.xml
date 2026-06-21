@@ -7,7 +7,7 @@
 
     <application
         android:name=".NeostoreApp"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
 
         <activity android:name="id.neotica.neostore.ui.home.MainActivity">
