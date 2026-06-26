@@ -49,6 +49,14 @@ public class LoginActivity extends Activity {
                 performLogin();
             }
         });
+
+        Button btnRegister = (Button) findViewById(R.id.btn_register);
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            }
+        });
     }
 
     private void performLogin() {

@@ -9,22 +9,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Neostore"
-        android:textSize="32sp"
+        android:text="Create Account"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign in to continue"
-        android:textSize="16sp"
         android:gravity="center"
         android:layout_marginBottom="32dp" />
 
     <EditText
-        android:id="@+id/et_username"
+        android:id="@+id/et_register_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Username"
@@ -32,19 +24,22 @@
         android:layout_marginBottom="16dp" />
 
     <EditText
-        android:id="@+id/et_password"
+        android:id="@+id/et_register_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:singleLine="true"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/et_register_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:singleLine="true"
         android:inputType="textPassword"
         android:layout_marginBottom="24dp" />
-
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login" />
 
     <Button
         android:id="@+id/btn_register"
