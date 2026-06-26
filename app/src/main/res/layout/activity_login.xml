@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Neostore"
+        android:text="HoloMarket"
         android:textSize="32sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -51,5 +51,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Register" />
+
+    <TextView
+        android:id="@+id/tv_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password?"
+        android:textSize="14sp"
+        android:textColor="#FF4081"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true" />
 
 </LinearLayout>
