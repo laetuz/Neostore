@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import id.neotica.neostore.BuildConfig;
 import id.neotica.neostore.R;
 import id.neotica.neostore.network.ApiCallback;
 import id.neotica.neostore.network.ApiTask;
@@ -26,7 +27,8 @@ public class LoginActivity extends Activity {
     private Button btnLogin;
     private AuthManager authManager;
 
-    private static final String LOGIN_URL = "http://dev.neotica.id/auth/login";
+    private static final String LOGIN_URL = BuildConfig.AUTH_BASE_URL + "/auth/login";
+    private static final String USERNAME_URL = BuildConfig.AUTH_BASE_URL + "/auth/user/username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +82,7 @@ public class LoginActivity extends Activity {
                         authManager.saveRefreshToken(refreshToken);
                         authManager.saveExpirationTime(expirationTime);
 
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
+                        fetchUsername();
                     } else {
                         Toast.makeText(LoginActivity.this, "Login failed: no token in response", Toast.LENGTH_LONG).show();
                     }
@@ -97,5 +96,31 @@ public class LoginActivity extends Activity {
                 Toast.makeText(LoginActivity.this, "Login failed: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         }, headers).execute();
+    }
+
+    private void fetchUsername() {
+        Map<String, String> headers = authManager.getAuthHeaders();
+
+        new ApiTask(this, "GET", USERNAME_URL, null, null, new ApiCallback() {
+            @Override
+            public void onSuccess(String response) {
+                if (response != null) {
+                    authManager.saveUsername(response.trim());
+                }
+                navigateToMain();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                navigateToMain();
+            }
+        }, headers).execute();
+    }
+
+    private void navigateToMain() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

@@ -16,6 +16,7 @@ public class AuthManager {
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_EXPIRATION_TIME = "expiration_time";
     private static final String KEY_ADULT_CONTENT = "adult_content_enabled";
+    private static final String KEY_USERNAME = "username";
 
     private SharedPreferences prefs;
 
@@ -59,11 +60,20 @@ public class AuthManager {
         return null;
     }
 
+    public void saveUsername(String username) {
+        prefs.edit().putString(KEY_USERNAME, username).commit();
+    }
+
+    public String getUsername() {
+        return prefs.getString(KEY_USERNAME, null);
+    }
+
     public void clear() {
         prefs.edit()
                 .remove(KEY_TOKEN)
                 .remove(KEY_REFRESH_TOKEN)
                 .remove(KEY_EXPIRATION_TIME)
+                .remove(KEY_USERNAME)
                 .commit();
     }
 
@@ -86,6 +96,8 @@ public class AuthManager {
     }
 
     public String getUsernameFromToken() {
+        String stored = getUsername();
+        if (stored != null) return stored;
         String token = getToken();
         if (token == null) return null;
         try {
