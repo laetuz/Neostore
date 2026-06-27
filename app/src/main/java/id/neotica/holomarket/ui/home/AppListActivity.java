@@ -28,6 +28,7 @@ import java.util.List;
 import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
 import id.neotica.holomarket.model.AppModel;
+import id.neotica.holomarket.network.AnalyticsTracker;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
 import id.neotica.holomarket.ui.AppAdapter;
@@ -129,6 +130,7 @@ public class AppListActivity extends Activity {
 
         currentSearchQuery = etSearch.getText().toString().trim();
         currentPage = 1;
+        AnalyticsTracker.track(AppListActivity.this, "feature_use", "search_performed");
         fetchApps(currentPage);
     }
 
