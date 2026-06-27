@@ -1,13 +1,9 @@
 # HoloMarket
 
-<details>
-  <summary><b>View Screenshots [release]</b></summary>
-  <br>
-
   <img height="480" alt="2014_06_25_23 35 39" src="https://github.com/user-attachments/assets/de3d51fc-0cc6-4590-b67f-c93559e12e7c" />
   <img height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/4dfaf3b5-266d-4586-833d-9c7fb5f5b7f2" />
   <img height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/52bb2753-af6d-4102-a75f-498692b925fa" />
-</details>
+  
 <details>
   <summary><b>View Screenshots [beta]</b></summary>
   <br>
@@ -31,6 +27,9 @@ Built to solve the TLS/SSL certificate deprecation wall that breaks standard web
 - **Username** fetched from API and cached
 - **Settings** screen with logout and 18+ content toggle
 - **CrashCatcher** — saves last crash stacktrace and shows it on next launch
+
+## Downloads
+You can just go to the [releases](https://github.com/laetuz/HoloMarket/releases) section or [Download here](https://github.com/laetuz/HoloMarket/releases/download/v1.0.1/HoloMarket.apk)
 
 ## Prerequisites
 
