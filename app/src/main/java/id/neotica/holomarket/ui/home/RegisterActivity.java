@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
+import id.neotica.holomarket.network.AnalyticsTracker;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
 import id.neotica.holomarket.utils.CrashCatcher;
@@ -75,6 +76,7 @@ public class RegisterActivity extends Activity {
                         String message = json.optString("message", "Account created.");
                         String registeredEmail = json.optString("email", "");
                         Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
+                        AnalyticsTracker.track(RegisterActivity.this, "feature_use", "user_registered");
                         finish();
                     } catch (Exception e) {
                         Toast.makeText(RegisterActivity.this, "Error parsing response", Toast.LENGTH_LONG).show();

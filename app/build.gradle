@@ -12,13 +12,14 @@ android {
         applicationId "id.neotica.holomarket"
         minSdkVersion 7
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "BASE_URL", properties.getProperty("BASE_URL", "\"http://fallback.url\"")
         buildConfigField "String", "FILE_BASE_URL", properties.getProperty("FILE_BASE_URL", "\"http://fallback.img\"")
         buildConfigField "String", "AUTH_BASE_URL", properties.getProperty("AUTH_BASE_URL", "\"http://fallback.url\"")
+        buildConfigField "String", "NEOMETRICS_BASE_URL", properties.getProperty("NEOMETRICS_BASE_URL", "\"http://fallback.url\"")
     }
     buildTypes {
         release {

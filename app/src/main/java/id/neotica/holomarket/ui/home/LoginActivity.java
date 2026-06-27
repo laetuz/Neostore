@@ -17,6 +17,7 @@ import java.util.Map;
 
 import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
+import id.neotica.holomarket.network.AnalyticsTracker;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
 import id.neotica.holomarket.utils.AuthManager;
@@ -99,6 +100,7 @@ public class LoginActivity extends Activity {
                         authManager.saveRefreshToken(refreshToken);
                         authManager.saveExpirationTime(expirationTime);
 
+                        AnalyticsTracker.track(LoginActivity.this, "feature_use", "user_logged_in");
                         fetchUsername();
                     } else {
                         Toast.makeText(LoginActivity.this, "Login failed: no token in response", Toast.LENGTH_LONG).show();

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
 import id.neotica.holomarket.model.VersionModel;
+import id.neotica.holomarket.network.AnalyticsTracker;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
 import id.neotica.holomarket.network.DownloadTask;
@@ -80,6 +81,8 @@ public class AppDetailActivity extends Activity {
 
                     Toast.makeText(AppDetailActivity.this, "Downloading v" + latestVersion.versionName + "...", Toast.LENGTH_SHORT).show();
 
+                    AnalyticsTracker.track(AppDetailActivity.this, "download", "app_downloaded");
+
                     // start downloading.
                     new DownloadTask(AppDetailActivity.this, fileName).execute(downloadUrl);
 
@@ -106,6 +109,8 @@ public class AppDetailActivity extends Activity {
                     if (fileName.length() == 0 || !fileName.endsWith(".apk")) {
                         fileName = "update_v" + clickedVersion.versionCode + ".apk";
                     }
+
+                    AnalyticsTracker.track(AppDetailActivity.this, "download", "app_downloaded");
 
                     // start downloading.
                     new DownloadTask(AppDetailActivity.this, fileName).execute(downloadUrl);
