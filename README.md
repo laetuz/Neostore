@@ -1,9 +1,20 @@
 # HoloMarket
 
+<details>
+  <summary><b>View Screenshots [release]</b></summary>
+  <br>
 
-<img width="320" height="480" alt="2014_06_25_23 35 39" src="https://github.com/user-attachments/assets/3e847ebe-ead8-45dc-8afb-8b10f7f9a4f6" />
+  <img height="480" alt="2014_06_25_23 35 39" src="https://github.com/user-attachments/assets/de3d51fc-0cc6-4590-b67f-c93559e12e7c" />
+  <img height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/4dfaf3b5-266d-4586-833d-9c7fb5f5b7f2" />
+  <img height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/52bb2753-af6d-4102-a75f-498692b925fa" />
+</details>
+<details>
+  <summary><b>View Screenshots [beta]</b></summary>
+  <br>
 
-<img width="320" height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/e3e6dbbe-db4f-4acb-877d-89cd7776e715" />
+  <img width="320" height="480" alt="2014_06_25_23 35 39" src="https://github.com/user-attachments/assets/3e847ebe-ead8-45dc-8afb-8b10f7f9a4f6" />
+  <img width="320" height="480" alt="2014_06_25_23 35 51" src="https://github.com/user-attachments/assets/e3e6dbbe-db4f-4acb-877d-89cd7776e715" />
+</details>
 
 Legacy Android app store client targeting **Android 2.1+ (API 7)** — Eclair / Froyo / Gingerbread.
 
