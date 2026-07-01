@@ -16,10 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.home.LoginActivity" />
-        <activity android:name=".ui.home.ForgotPasswordActivity" />
-        <activity android:name=".ui.home.RegisterActivity" />
-        <activity android:name=".ui.home.SettingsActivity" />
+        <activity android:name=".ui.auth.LoginActivity" />
+        <activity android:name=".ui.auth.ForgotPasswordActivity" />
+        <activity android:name=".ui.auth.RegisterActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
         <activity android:name=".ui.detail.AppDetailActivity" />
         <activity android:name=".ui.home.AppListActivity" />
     </application>

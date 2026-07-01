@@ -1,4 +1,4 @@
-package id.neotica.holomarket.ui;
+package id.neotica.holomarket.ui.detail;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,6 +23,7 @@ public class VersionAdapter extends ArrayAdapter<VersionModel> {
 
     private static class ViewHolder {
         TextView tvVersionName;
+        TextView tvMinSdk;
         TextView tvChangelog;
     }
 
@@ -35,6 +36,7 @@ public class VersionAdapter extends ArrayAdapter<VersionModel> {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_version, parent, false);
             viewHolder.tvVersionName = (TextView) convertView.findViewById(R.id.tv_version_name);
+            viewHolder.tvMinSdk = (TextView) convertView.findViewById(R.id.tv_min_sdk);
             viewHolder.tvChangelog = (TextView) convertView.findViewById(R.id.tv_changelog);
 
             convertView.setTag(viewHolder);
@@ -44,6 +46,8 @@ public class VersionAdapter extends ArrayAdapter<VersionModel> {
 
         if (version != null) {
             viewHolder.tvVersionName.setText("Version " + version.versionName + " (" + version.versionCode + ")");
+
+            viewHolder.tvMinSdk.setText("Min SDK: " + version.minSdk);
 
             if (version.changelog != null && version.changelog.length() > 0) {
                 viewHolder.tvChangelog.setText(version.changelog);

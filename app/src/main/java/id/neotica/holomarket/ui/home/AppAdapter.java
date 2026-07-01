@@ -1,4 +1,4 @@
-package id.neotica.holomarket.ui;
+package id.neotica.holomarket.ui.home;
 
 import android.content.Context;
 import android.text.TextUtils;

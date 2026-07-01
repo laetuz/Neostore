@@ -1,4 +1,4 @@
-package id.neotica.holomarket.ui.home;
+package id.neotica.holomarket.ui.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import id.neotica.holomarket.R;
+import id.neotica.holomarket.ui.home.MainActivity;
 import id.neotica.holomarket.utils.AuthManager;
 import id.neotica.holomarket.utils.CrashCatcher;
 

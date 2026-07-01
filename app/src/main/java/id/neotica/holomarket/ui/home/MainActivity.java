@@ -25,7 +25,9 @@ import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
+import id.neotica.holomarket.ui.auth.LoginActivity;
 import id.neotica.holomarket.ui.detail.AppDetailActivity;
+import id.neotica.holomarket.ui.settings.SettingsActivity;
 import id.neotica.holomarket.utils.AuthManager;
 import id.neotica.holomarket.utils.CrashCatcher;
 
