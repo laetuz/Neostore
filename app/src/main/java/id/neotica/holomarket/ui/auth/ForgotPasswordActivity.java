@@ -1,4 +1,4 @@
-package id.neotica.holomarket.ui.home;
+package id.neotica.holomarket.ui.auth;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -13,6 +13,13 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tv_min_sdk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="13sp" />
+
+    <TextView
         android:id="@+id/tv_changelog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

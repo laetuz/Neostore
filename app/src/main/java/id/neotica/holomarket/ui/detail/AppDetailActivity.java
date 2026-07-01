@@ -1,10 +1,14 @@
 package id.neotica.holomarket.ui.detail;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,15 +22,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import id.neotica.holomarket.BuildConfig;
 import id.neotica.holomarket.R;
+import id.neotica.holomarket.model.AppModel;
 import id.neotica.holomarket.model.VersionModel;
 import id.neotica.holomarket.network.AnalyticsTracker;
 import id.neotica.holomarket.network.ApiCallback;
 import id.neotica.holomarket.network.ApiTask;
 import id.neotica.holomarket.network.DownloadTask;
-import id.neotica.holomarket.ui.VersionAdapter;
 
 public class AppDetailActivity extends Activity {
 
@@ -157,10 +162,15 @@ public class AppDetailActivity extends Activity {
                         for (int i = 0; i < versionsArray.length(); i++) {
                             JSONObject vObj = versionsArray.getJSONObject(i);
                             adapter.add(new VersionModel(
+                                    vObj.optString("id", ""),
+                                    vObj.optString("app_id", ""),
                                     vObj.optString("version_name", ""),
                                     vObj.optInt("version_code", 0),
                                     vObj.optString("file_url", ""),
-                                    vObj.optString("changelog", "")
+                                    vObj.optString("changelog", ""),
+                                    vObj.optInt("min_sdk", 0),
+                                    vObj.optInt("max_sdk", 0),
+                                    vObj.optLong("created_at", 0)
                             ));
                         }
                     }
@@ -189,5 +199,107 @@ public class AppDetailActivity extends Activity {
                 }
             }
         }).execute();
+    }
+
+    /**
+     * Created by ryomartin on 21/03/26.
+     */
+
+    public static class VersionAdapter extends ArrayAdapter<VersionModel> {
+        public VersionAdapter(Context context, List<VersionModel> versions) {
+            super(context, 0, versions);
+        }
+
+        private static class ViewHolder {
+            TextView tvVersionName;
+            TextView tvMinSdk;
+            TextView tvChangelog;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            VersionModel version = getItem(position);
+            ViewHolder viewHolder;
+
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_version, parent, false);
+            viewHolder.tvVersionName = (TextView) convertView.findViewById(R.id.tv_version_name);
+            viewHolder.tvMinSdk = (TextView) convertView.findViewById(R.id.tv_min_sdk);
+            viewHolder.tvChangelog = (TextView) convertView.findViewById(R.id.tv_changelog);
+
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            if (version != null) {
+                viewHolder.tvVersionName.setText("Version " + version.versionName + " (" + version.versionCode + ")");
+
+                viewHolder.tvMinSdk.setText("Min SDK: " + version.minSdk);
+
+                if (version.changelog != null && version.changelog.length() > 0) {
+                    viewHolder.tvChangelog.setText(version.changelog);
+                    viewHolder.tvChangelog.setVisibility(View.VISIBLE);
+                } else  {
+                    viewHolder.tvChangelog.setVisibility(View.GONE);
+                }
+            }
+
+            return convertView;
+        }
+    }
+
+    /**
+     * Created by ryomartin on 21/03/26.
+     */
+
+    public static class AppAdapter extends ArrayAdapter<AppModel> {
+        public AppAdapter(Context context, List<AppModel> apps) {
+            super(context, 0, apps);
+        }
+
+        private static class ViewHolder {
+            TextView tvtitle;
+            ImageView ivIcon;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            AppModel app = getItem(position);
+
+            ViewHolder viewHolder;
+
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_app, parent, false);
+
+                viewHolder.tvtitle = (TextView) convertView.findViewById(R.id.tv_title);
+                viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.iv_icon);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            if (app != null) {
+                viewHolder.tvtitle.setText(app.title);
+
+                if (!TextUtils.isEmpty(app.iconUrl)) {
+
+                    String fullImageUrl = BuildConfig.FILE_BASE_URL + "/buckets" + app.iconUrl;
+
+                    // Fire the ImageLoader
+                    ImageLoader.getInstance().displayImage(fullImageUrl, viewHolder.ivIcon);
+
+                } else {
+                    // If the app has no icon, cancel any pending image load on this recycled view
+                    // and set it to a default system icon
+                    ImageLoader.getInstance().cancelDisplayTask(viewHolder.ivIcon);
+                    viewHolder.ivIcon.setImageResource(android.R.drawable.sym_def_app_icon);
+                }
+            }
+
+            return convertView;
+        }
     }
 }
